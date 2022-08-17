@@ -126,7 +126,9 @@ const renderItem = ({item}) => {
         {/* this is a moda */}
       <Modal visible={modalOpen} animationType='slide' style={styles.modalContainer}>
         <View style={styles.modalContent}>
-
+         <View style={{ height:300 , width:'100%'}} >
+            <Image source={{uri:details.img}} style={{height:300 , width:'100%'}} />
+         </View>
       <Text style={{marginVertical: 10, fontSize: 13, fontWeight: 'bold', color:'white'}}>
         {details.name}
       </Text >
@@ -159,7 +161,8 @@ const renderItem = ({item}) => {
        <Text style={styles.modalToggle} onPress={() =>{
            setDetails({
             name:item.name,
-            description:item.year
+            description:item.year,
+            img:item.url
            })
         setModalOpen(true)}}>
           WATCH NOW

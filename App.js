@@ -16,7 +16,8 @@ export default function App() {
 
     const [details, setDetails] = useState({
       name:'',
-      description:''
+      description:'',
+      img:''
     })
 
 
