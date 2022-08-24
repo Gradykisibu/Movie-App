@@ -1,11 +1,14 @@
 import React, {useState, useRef} from 'react';
-import {Text, View, Dimensions, Image, Pressable, ImageBackground,ScrollView, StyleSheet} from 'react-native';
+import {Text, View, Dimensions, Image, Pressable, ImageBackground,ScrollView, StyleSheet, Modal} from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { Ionicons } from '@expo/vector-icons'; 
 import Swiper1 from '../Swiper1';
 import Swiper2 from '../Swiper2';
 import Swiper3 from '../Swiper3';
 import { AntDesign } from "@expo/vector-icons";
+// import { AppContext } from '.../movie-stream/utils/context'
+import { AppContext } from '../utils/context';
+import { useContext } from 'react';
 
 // import MovieCard from '../MovieCard';
 
@@ -15,10 +18,10 @@ export const SLIDER_WIDTH = Dimensions.get('window').width + 43;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.8);
 
 const topbar = {
-  width: '105%',
+  width: '100%',
   backgroundColor: "#414859",
   height: 50,
-  marginTop: -45,
+  marginTop: 23,
   flexDirection: "row",
   display: "flex",
   alignItems: "center",
@@ -42,19 +45,19 @@ const data = [
   {
     id: 1,
     title: 'Doctor Strange II',
-    description:'hello world',
+    description:'Doctor Strange teams up with a mysterious teenage girl from his dreams who can travel across multiverses, to battle multiple threats, including other-universe versions of himself, which threaten to wipe out millions across the multiverse.',
     url: 'https://cdn.vox-cdn.com/thumbor/aIgnekvyjdARf_NVJj21EL37uT8=/1400x1050/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/23434598/DrStrange2_Payoff_1_Sht_v6_Lg.jpeg',
   },
   {
     id: 2,
     title: 'Spider-Man: Far From Home',
-    description:'hello world',
+    description:'Peter Parker, the beloved superhero Spider-Man, faces four destructive elemental monsters while on holiday in Europe. Soon, he receives help from Mysterio, a fellow hero with mysterious origins.',
     url: 'https://i.ytimg.com/vi/uyPCkTzhDxQ/maxresdefault.jpg',
   },
   {
     id: 3,
     title: 'Captain Marvel',
-    description:'hello world',
+    description:'Amidst a mission, Vers, a Kree warrior, gets separated from her team and is stranded on Earth. However, her life takes an unusual turn after she teams up with Fury, a S.H.I.E.L.D. agent.',
 
     url: 'https://i0.wp.com/thegameofnerds.com/wp-content/uploads/2019/03/captain-marvel-giveaway.jpg?fit=767%2C431&ssl=1',
   },
@@ -68,48 +71,98 @@ const data = [
   {
     id:5,
     title:'The Lost City',
-    description:'',
+    description:'Reclusive author Loretta Sage writes about exotic places in her popular adventure novels that feature a handsome cover model named Alan. While on tour promoting her new book with Alan, Loretta gets kidnapped by an eccentric billionaire who hopes she can lead him to an ancient cities lost treasure from her latest story. Determined to prove he can be a hero in real life and not just on the pages of her books, Alan sets off to rescue her.',
     url:'https://catholicnews.com/wp-content/uploads/custom/20220324T1545-MOVIE-REVIEW-THE-LOST-CITY-1523886.jpg'
   }
 ];
 
+const Home = ({navigation}) => {
+  const [modalOpen, setModalOpen] = useState('false')
+  const [name, setName] = useState('')
+  const {details, setDetails} = useContext(AppContext)
+
+  const passDetails = (name , description)=>{
+       setDetails({
+           name : '',
+           description:'',
+       })
+  }
+  
 
 const renderItem = ({item}) => {
   return (
     <View
       style={{
-        padding: 20,
+        // padding: 20,
         alignItems: 'center',
         backgroundColor: 'transparent',
+        width:'100%',
+        height:250,
+        flexDirection:'row',
+        justifyContent:'center',
+        justifyContent:'space-between'
+        
       }}>
-      <ImageBackground source={{uri: item.url}} style={{width: 270, height: 200, borderRadius:40,flexDirection:'row', marginRight:50, marginTop:-15}}>
-        <Ionicons name="play-circle-outline" size={50} color="#00ffff" style={{marginTop:140,}}/>
-        <Text style={{fontSize: 16, fontWeight: 'bold',color:'white',marginTop:155,}}>{item.title}</Text>
+      <ImageBackground source={{uri: item.url}} ref='' style={{width:'100%', height: '100%', borderRadius:40,flexDirection:'row', marginRight:50,}}>
+        <Text onPress={() =>{
+           setDetails({
+            name:item.name,
+            description:item.year,
+            img:item.url,
+            description:item.description,
+           })
+        setModalOpen(true)}}
+        style={{marginTop:190,}}
+        >
+        <Ionicons name="play-circle-outline" size={50} color="#00ffff"/>
+        </Text>
+
+        <Modal visible={modalOpen} animationType='slide' style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+           <View style={{ height:300 , width:'100%'}} >
+            <ImageBackground source={{uri:details.img}} resizeMode='contain' style={{height:'100%' , width:'100%',flexDirection:'row',alignItems:'center', justifyContent:'center',}}>
+            <Ionicons name="play-circle-outline" size={50} color="#00ffff"/>
+            </ImageBackground>
+         </View>
+      <Text style={{marginVertical: 10, fontSize: 18, fontWeight: '300', color:'white'}}>
+      <AntDesign name="star" size={14} color="#00ffff" />
+        {details.name}
+      </Text >
+      <Text style={{marginVertical: 10, fontSize: 13, fontWeight: '200', color:'white'}}>
+        {details.description}
+      </Text>
+        <Text style={styles.modalToggleClose} onPress={() => setModalOpen(false)}>
+          Close
+       </Text>
+        </View>
+        </Modal>
+       
+
+        <Text style={{fontSize: 19, fontWeight: 'bold',color:'white',marginTop:205,}}>{item.title}</Text>
       </ImageBackground>
-      <Image source={{uri: item.url}} style={{width:90, height:70,marginLeft:150, marginTop:-25}}/>
+      <Image source={{uri: item.url}} style={{width:300, height:300,marginLeft:150,zIndex:1}}/>
       
     </View>
   );
 };
 
-const Home = ({navigation}) => {
+
   const [index, setIndex] = useState(0);
   const isCarousel = useRef(null);
   return (
-    <View style={{paddingTop: 70,alignItems: 'center', backgroundColor:'#1E2129'}}>
+    <View >
 
-     
-
-         <Pressable onPress={()=>{navigation.navigate('Main')}}>
+        <Pressable onPress={()=>{navigation.navigate('Main')}}>
           <View style={topbar}>
             <Image source={require("../assets/logo2.png")} style={logo} />
-            <Text style={{color:'white', zIndex:1,marginLeft:'65%',}}>
+            <Text style={{color:'white', zIndex:1,marginLeft:'70%',}}>
               GLIMEO
             </Text>
           </View>
          </Pressable>
 
    <ScrollView>
+   <View style={styles.container}>
       <Carousel
         ref={isCarousel}
         data={data}
@@ -144,7 +197,7 @@ const Home = ({navigation}) => {
           </Pressable>
 
         <View>
-          <Text style={{fontSize: 16, fontWeight: 'bold',color:'white', marginLeft:17, paddingLeft:6, marginTop:12,marginLeft:110}}>Trending</Text>
+          <Text style={{fontSize: 16, fontWeight: 'bold',color:'white', marginLeft:17, paddingLeft:6, marginTop:12,marginLeft:10, borderBottomWidth:5, borderBottomColor:'#00ffff'}}>Trending</Text>
         </View>
 
         <View>
@@ -190,12 +243,12 @@ const Home = ({navigation}) => {
               SFLIX
               </Text>
           </View>
+          <View style={{marginBottom:60}}>
 
-
-        <View style={{marginBottom:10}}>
-         </View>
-    </ScrollView>
+          </View>
     
+      </View>
+    </ScrollView>
     </View>
   );
 };
@@ -203,12 +256,21 @@ const Home = ({navigation}) => {
 export default Home;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "#1E2129",
+    padding: 20,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   button: {
     width: "50%",
     borderRadius: 50,
     backgroundColor: "#17a2b8",
     flexDirection: "row",
-    marginLeft:60,
+    marginLeft:0,
     alignItems:'center',
     justifyContent:'center'
   },
@@ -223,5 +285,30 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     width: "100%",
     marginTop: 6,
+  },
+  modalToggle:{
+    fontSize:15,
+    backgroundColor:'#00ffff',
+    borderRadius:4,
+    alignItems:'center',
+    textAlign:'center',
+    justifyContent:'center',
+  },
+  modalToggleClose:{
+    fontSize:17,
+    backgroundColor:'#00ffff',
+    borderRadius:4,
+    alignItems:'center',
+    textAlign:'center',
+    justifyContent:'center',
+    width:70,
+  },
+  modalContent:{
+    alignItems:'center',
+    textAlign:'center',
+    justifyContent:'center',
+    height:'100%',
+    backgroundColor:'#414859',
+    flex:1,
   },
 });
